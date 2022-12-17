@@ -18,26 +18,26 @@ CREATE TABLE "userInfo" (
 CREATE TABLE "RecipeCategory" (
   "id" varchar PRIMARY KEY,
   "title" varchar NOT NULL,
-  "image" varchar,
+  "image" varchar NOT NULL,
   "active" bool DEFAULT true
 );
 
 CREATE TABLE "Recipe" (
   "id" varchar PRIMARY KEY,
   "name" varchar NOT NULL,
-  "description" varchar,
-  "image" varchar DEFAULT 'default.png',
+  "description" text NOT NULL,
+  "image" varchar DEFAULT 'default.png' NOT NULL,
   "active" bool DEFAULT true,
   "time" varchar NOT NULL,
-  "url" varchar,
-  "servings" int,
+  "url" varchar NOT NULL,
+  "servings" int NOT NULL,
   "created_at" timestamptz DEFAULT (now())
 );
 
 CREATE TABLE "RecipeCategory_Recipe" (
   "id" varchar PRIMARY KEY,
-  "recipe_id" varchar,
-  "recipe_category_id" varchar
+  "recipe_id" varchar NOT NULL,
+  "recipe_category_id" varchar NOT NULL
 );
 
 ALTER TABLE "userInfo" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

@@ -9,6 +9,9 @@ import (
 )
 
 type Querier interface {
+	AssignRecipeToCategory(ctx context.Context, arg AssignRecipeToCategoryParams) (RecipeCategoryRecipe, error)
+	CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Recipe, error)
+	CreateRecipeCategory(ctx context.Context, arg CreateRecipeCategoryParams) (RecipeCategory, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateUserInfo(ctx context.Context, arg CreateUserInfoParams) (UserInfo, error)
 }

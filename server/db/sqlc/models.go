@@ -10,28 +10,28 @@ import (
 )
 
 type Recipe struct {
-	ID          string         `json:"id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Image       sql.NullString `json:"image"`
-	Active      sql.NullBool   `json:"active"`
-	Time        string         `json:"time"`
-	Url         sql.NullString `json:"url"`
-	Servings    sql.NullInt32  `json:"servings"`
-	CreatedAt   sql.NullTime   `json:"created_at"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Image       string       `json:"image"`
+	Active      sql.NullBool `json:"active"`
+	Time        string       `json:"time"`
+	Url         string       `json:"url"`
+	Servings    int32        `json:"servings"`
+	CreatedAt   sql.NullTime `json:"created_at"`
 }
 
 type RecipeCategory struct {
-	ID     string         `json:"id"`
-	Title  string         `json:"title"`
-	Image  sql.NullString `json:"image"`
-	Active sql.NullBool   `json:"active"`
+	ID     string       `json:"id"`
+	Title  string       `json:"title"`
+	Image  string       `json:"image"`
+	Active sql.NullBool `json:"active"`
 }
 
 type RecipeCategoryRecipe struct {
-	ID               string         `json:"id"`
-	RecipeID         sql.NullString `json:"recipe_id"`
-	RecipeCategoryID sql.NullString `json:"recipe_category_id"`
+	ID               string `json:"id"`
+	RecipeID         string `json:"recipe_id"`
+	RecipeCategoryID string `json:"recipe_category_id"`
 }
 
 type User struct {
