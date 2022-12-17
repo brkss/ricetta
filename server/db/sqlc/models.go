@@ -44,9 +44,9 @@ type User struct {
 }
 
 type UserInfo struct {
-	ID     string         `json:"id"`
-	Weight int32          `json:"weight"`
-	Height int32          `json:"height"`
-	Birth  time.Time      `json:"birth"`
-	UserID sql.NullString `json:"user_id"`
+	ID     string    `json:"id"`
+	Weight int32     `json:"weight"`
+	Height int32     `json:"height"`
+	Birth  time.Time `json:"birth"`
+	UserID string    `json:"user_id"`
 }

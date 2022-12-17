@@ -1,1 +1,5 @@
-
+DROP TABLE IF EXISTS "userInfo";
+DROP TABLE IF EXISTS "RecipeCategory_Recipe";
+DROP TABLE IF EXISTS "Recipe";
+DROP TABLE IF EXISTS "RecipeCategory";
+DROP TABLE IF EXISTS "users";

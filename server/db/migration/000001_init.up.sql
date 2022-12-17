@@ -12,7 +12,7 @@ CREATE TABLE "userInfo" (
   "weight" int NOT NULL,
   "height" int NOT NULL,
   "birth" timestamp NOT NULL,
-  "user_id" varchar
+  "user_id" varchar NOT NULL
 );
 
 CREATE TABLE "RecipeCategory" (
