@@ -19,8 +19,8 @@ type CreateUserRequest struct {
 
 // createUser handler for reguster post request
 func (server *Server) createUser(ctx *gin.Context) {
-
 	var req CreateUserRequest
+
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))

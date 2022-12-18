@@ -36,3 +36,6 @@ test:
 
 server:
 	go run .
+
+run:
+	CompileDaemon -command="make server"
