@@ -23,8 +23,8 @@ func main() {
 		log.Fatal("cannot connect to databse :", err)
 	}
 
-	source := db.New(con)
-	server := api.NewServer(source)
+	store := db.NewStore(con)
+	server := api.NewServer(store)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

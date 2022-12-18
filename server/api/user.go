@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	db "github.com/brkss/vanillefraise2/db/sqlc"
+	"github.com/brkss/vanillefraise2/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -26,12 +27,17 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+	hash, err := utils.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 	arg := db.CreateUserParams{
 		ID:       uuid.New().String(),
 		Name:     req.Name,
 		Email:    req.Email,
 		Username: req.Username,
-		Password: req.Password,
+		Password: hash,
 	}
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {

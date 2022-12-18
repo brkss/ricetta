@@ -8,7 +8,7 @@ import (
 )
 
 type Server struct {
-	store  *db.Queries
+	store  db.Store
 	router *gin.Engine
 }
 
@@ -17,7 +17,7 @@ func (server *Server) Ping(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, "pong")
 }
 
-func NewServer(store *db.Queries) *Server {
+func NewServer(store db.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
