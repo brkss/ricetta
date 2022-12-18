@@ -1,8 +1,8 @@
 CREATE TABLE "users" (
   "id" varchar PRIMARY KEY,
   "name" varchar NOT NULL,
-  "email" varchar NOT NULL,
-  "username" varchar NOT NULL,
+  "email" varchar NOT NULL UNIQUE,
+  "username" varchar NOT NULL UNIQUE,
   "password" varchar NOT NULL,
   "created_at" timestamptz DEFAULT (now())
 );
