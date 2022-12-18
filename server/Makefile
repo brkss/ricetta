@@ -43,5 +43,4 @@ run:
 mock:
 	mockgen -package mockdb --destination=db/mock/store.go github.com/brkss/vanillefraise2/db/sqlc Store
 
-
 .PHONY: startdb stopdb postgres createdb dropdb migrateup migratedown sqlc test server run mock

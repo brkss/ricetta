@@ -18,7 +18,7 @@ type Recipe struct {
 	Time        string       `json:"time"`
 	Url         string       `json:"url"`
 	Servings    int32        `json:"servings"`
-	CreatedAt   sql.NullTime `json:"created_at"`
+	CreatedAt   time.Time    `json:"created_at"`
 }
 
 type RecipeCategory struct {
@@ -35,12 +35,12 @@ type RecipeCategoryRecipe struct {
 }
 
 type User struct {
-	ID        string       `json:"id"`
-	Name      string       `json:"name"`
-	Email     string       `json:"email"`
-	Username  string       `json:"username"`
-	Password  string       `json:"password"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Username  string    `json:"username"`
+	Password  string    `json:"password"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type UserInfo struct {

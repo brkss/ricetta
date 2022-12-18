@@ -4,7 +4,7 @@ CREATE TABLE "users" (
   "email" varchar NOT NULL UNIQUE,
   "username" varchar NOT NULL UNIQUE,
   "password" varchar NOT NULL,
-  "created_at" timestamptz DEFAULT (now())
+  "created_at" timestamptz DEFAULT (now()) NOT NULL
 );
 
 CREATE TABLE "userInfo" (
@@ -31,7 +31,7 @@ CREATE TABLE "Recipe" (
   "time" varchar NOT NULL,
   "url" varchar NOT NULL,
   "servings" int NOT NULL,
-  "created_at" timestamptz DEFAULT (now())
+  "created_at" timestamptz DEFAULT (now()) NOT NULL
 );
 
 CREATE TABLE "RecipeCategory_Recipe" (
