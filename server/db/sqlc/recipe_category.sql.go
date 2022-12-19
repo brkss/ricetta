@@ -34,3 +34,43 @@ func (q *Queries) CreateRecipeCategory(ctx context.Context, arg CreateRecipeCate
 	)
 	return i, err
 }
+
+const getCategories = `-- name: GetCategories :many
+SELECT id, title, image, active FROM "RecipeCategory"
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type GetCategoriesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetCategories(ctx context.Context, arg GetCategoriesParams) ([]RecipeCategory, error) {
+	rows, err := q.db.QueryContext(ctx, getCategories, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []RecipeCategory{}
+	for rows.Next() {
+		var i RecipeCategory
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Image,
+			&i.Active,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

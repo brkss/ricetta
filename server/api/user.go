@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	db "github.com/brkss/vanillefraise2/db/sqlc"
@@ -40,7 +39,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		Username: req.Username,
 		Password: hash,
 	}
-	fmt.Printf("req >>> %v\n", req)
+	//fmt.Printf("req >>> %v\n", req)
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
 		pqErr, ok := err.(*pq.Error)

@@ -9,15 +9,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func RandomRecipeCategory(t *testing.T)(RecipeCategory){
-	
+func RandomRecipeCategory(t *testing.T) RecipeCategory {
+
 	arg := CreateRecipeCategoryParams{
-		ID: uuid.New().String(),
+		ID:    uuid.New().String(),
 		Title: utils.RandomName(),
 		Image: utils.RandomName(),
 	}
-	
-	category, err := testQueries.CreateRecipeCategory(context.Background(), arg) 
+
+	category, err := testQueries.CreateRecipeCategory(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, category)
 
@@ -30,15 +30,15 @@ func RandomRecipeCategory(t *testing.T)(RecipeCategory){
 
 }
 
-func RandomRecipe(t *testing.T) (Recipe){
+func RandomRecipe(t *testing.T) Recipe {
 	arg := CreateRecipeParams{
-		ID: uuid.New().String(),
-		Name: utils.RandomName(),
+		ID:          uuid.New().String(),
+		Name:        utils.RandomName(),
 		Description: utils.RandomString(100),
-		Image: utils.RandomName(),
-		Url: utils.RandomString(33),
-		Time: utils.RandomString(5),
-		Servings: 10,
+		Image:       utils.RandomName(),
+		Url:         utils.RandomString(33),
+		Time:        utils.RandomString(5),
+		Servings:    10,
 		//Description: utils.RandomString(100),
 	}
 	recipe, err := testQueries.CreateRecipe(context.Background(), arg)
@@ -53,24 +53,24 @@ func RandomRecipe(t *testing.T) (Recipe){
 	require.Equal(t, recipe.Url, arg.Url)
 	require.Equal(t, recipe.Time, arg.Time)
 
-	return recipe;
+	return recipe
 }
 
-func TestCreateRecipeCategory(t *testing.T){
-	RandomRecipeCategory(t);
+func TestCreateRecipeCategory(t *testing.T) {
+	RandomRecipeCategory(t)
 }
 
-func TestCreateRecipe(t *testing.T){
-	RandomRecipe(t);
+func TestCreateRecipe(t *testing.T) {
+	RandomRecipe(t)
 }
 
-func TestRecipeToCategory(t *testing.T){
+func TestRecipeToCategory(t *testing.T) {
 	recipe := RandomRecipe(t)
 	category := RandomRecipeCategory(t)
-	
+
 	arg := AssignRecipeToCategoryParams{
-		ID: uuid.New().String(),
-		RecipeID: recipe.ID,
+		ID:               uuid.New().String(),
+		RecipeID:         recipe.ID,
 		RecipeCategoryID: category.ID,
 	}
 	recipeToCategory, err := testQueries.AssignRecipeToCategory(context.Background(), arg)
@@ -80,5 +80,43 @@ func TestRecipeToCategory(t *testing.T){
 	require.Equal(t, recipeToCategory.ID, arg.ID)
 	require.Equal(t, recipeToCategory.RecipeID, arg.RecipeID)
 	require.Equal(t, recipeToCategory.RecipeCategoryID, arg.RecipeCategoryID)
+}
 
+func TestGetRecipe(t *testing.T) {
+	n := 10
+
+	for i := 0; i < n; i++ {
+		RandomRecipe(t)
+	}
+	arg := GetRecipesParams{
+		Limit:  5,
+		Offset: 5,
+	}
+	recipes, err := testQueries.GetRecipes(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, recipes, 5)
+
+	for _, recipe := range recipes {
+		require.NotEmpty(t, recipe)
+	}
+}
+
+func TestGetRecipeCategories(t *testing.T) {
+
+	n := 10
+	for i := 0; i < n; i++ {
+		RandomRecipeCategory(t)
+	}
+
+	arg := GetCategoriesParams{
+		Limit:  5,
+		Offset: 5,
+	}
+	categories, err := testQueries.GetCategories(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, categories, 5)
+
+	for _, category := range categories {
+		require.NotEmpty(t, category)
+	}
 }

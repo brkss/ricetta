@@ -52,3 +52,48 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Rec
 	)
 	return i, err
 }
+
+const getRecipes = `-- name: GetRecipes :many
+SELECT id, name, description, image, active, time, url, servings, created_at FROM "Recipe"
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type GetRecipesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetRecipes(ctx context.Context, arg GetRecipesParams) ([]Recipe, error) {
+	rows, err := q.db.QueryContext(ctx, getRecipes, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Recipe{}
+	for rows.Next() {
+		var i Recipe
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Image,
+			&i.Active,
+			&i.Time,
+			&i.Url,
+			&i.Servings,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

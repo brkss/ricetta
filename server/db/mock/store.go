@@ -109,3 +109,33 @@ func (mr *MockStoreMockRecorder) CreateUserInfo(arg0, arg1 interface{}) *gomock.
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserInfo", reflect.TypeOf((*MockStore)(nil).CreateUserInfo), arg0, arg1)
 }
+
+// GetCategories mocks base method.
+func (m *MockStore) GetCategories(arg0 context.Context, arg1 db.GetCategoriesParams) ([]db.RecipeCategory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCategories", arg0, arg1)
+	ret0, _ := ret[0].([]db.RecipeCategory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCategories indicates an expected call of GetCategories.
+func (mr *MockStoreMockRecorder) GetCategories(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategories", reflect.TypeOf((*MockStore)(nil).GetCategories), arg0, arg1)
+}
+
+// GetRecipes mocks base method.
+func (m *MockStore) GetRecipes(arg0 context.Context, arg1 db.GetRecipesParams) ([]db.Recipe, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRecipes", arg0, arg1)
+	ret0, _ := ret[0].([]db.Recipe)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecipes indicates an expected call of GetRecipes.
+func (mr *MockStoreMockRecorder) GetRecipes(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecipes", reflect.TypeOf((*MockStore)(nil).GetRecipes), arg0, arg1)
+}

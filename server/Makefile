@@ -28,6 +28,7 @@ migrateup:
 
 migratedown:
 	migrate -path db/migration -database "postgres://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_DBNAME)?sslmode=disable" -verbose down 1
+
 sqlc:
 	sqlc generate
 
@@ -42,5 +43,7 @@ run:
 
 mock:
 	mockgen -package mockdb --destination=db/mock/store.go github.com/brkss/vanillefraise2/db/sqlc Store
+
+gen: sqlc mock
 
 .PHONY: startdb stopdb postgres createdb dropdb migrateup migratedown sqlc test server run mock
