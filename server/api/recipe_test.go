@@ -141,6 +141,40 @@ func TestCreateRecipe(t *testing.T) {
 			},
 		},
 		{
+			name: "InternalError2",
+			body: gin.H{
+				"name":        recipe.Name,
+				"description": recipe.Description,
+				"image":       recipe.Image,
+				"time":        recipe.Time,
+				"url":         recipe.Url,
+				"servings":    recipe.Servings,
+				"category_id": category.ID,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+				arg := db.CreateRecipeParams{
+					ID:          category.ID,
+					Name:        recipe.Name,
+					Image:       recipe.Image,
+					Description: recipe.Description,
+					Url:         recipe.Url,
+					Time:        recipe.Time,
+					Servings:    recipe.Servings,
+				}
+				store.EXPECT().
+					CreateRecipe(gomock.Any(), EqCreateRecipeParams(arg)).
+					Times(1).
+					Return(recipe, nil)
+				store.EXPECT().
+					AssignRecipeToCategory(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(db.RecipeCategoryRecipe{}, sql.ErrConnDone)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
 			name: "BadRequest",
 			body: gin.H{
 				"name":        recipe.Name,

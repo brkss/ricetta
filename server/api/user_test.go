@@ -97,9 +97,8 @@ func TestCreateUserAPI(t *testing.T) {
 				requireBodyMatch(t, recorder.Body, user)
 			},
 		},
-
 		{
-			name: "Internal Error",
+			name: "InternalError",
 			body: gin.H{
 				"name":     user.Name,
 				"username": user.Username,
@@ -132,6 +131,22 @@ func TestCreateUserAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusForbidden, recorder.Code)
+			},
+		},
+		{
+			name: "BadRequest",
+			body: gin.H{
+				"name":     user.Name,
+				"password": user.Password,
+				"username": user.Username,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
 		},
 	}

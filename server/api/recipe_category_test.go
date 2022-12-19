@@ -78,6 +78,40 @@ func TestCreateCategoryAPI(t *testing.T) {
 				require.Equal(t, recorder.Code, http.StatusOK)
 			},
 		},
+		{
+			name: "BadRequest",
+			body: gin.H{
+				"title": category.Title,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+
+				store.EXPECT().CreateRecipeCategory(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, recorder.Code, http.StatusBadRequest)
+			},
+		},
+		{
+			name: "InternalError",
+			body: gin.H{
+				"title": category.Title,
+				"image": category.Image,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+				arg := db.CreateRecipeCategoryParams{
+					ID:    category.ID,
+					Title: category.Title,
+					Image: category.Image,
+				}
+				store.EXPECT().CreateRecipeCategory(gomock.Any(), EqCreateRecipeCategoryParams(arg)).
+					Times(1).
+					Return(db.RecipeCategory{}, sql.ErrConnDone)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, recorder.Code, http.StatusInternalServerError)
+			},
+		},
 	}
 
 	for i := range testCases {
