@@ -106,6 +106,73 @@ func TestCreateRecipe(t *testing.T) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 			},
 		},
+		{
+			name: "InternalError",
+			body: gin.H{
+				"name":        recipe.Name,
+				"description": recipe.Description,
+				"image":       recipe.Image,
+				"time":        recipe.Time,
+				"url":         recipe.Url,
+				"servings":    recipe.Servings,
+				"category_id": category.ID,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+				arg := db.CreateRecipeParams{
+					ID:          category.ID,
+					Name:        recipe.Name,
+					Image:       recipe.Image,
+					Description: recipe.Description,
+					Url:         recipe.Url,
+					Time:        recipe.Time,
+					Servings:    recipe.Servings,
+				}
+				store.EXPECT().
+					CreateRecipe(gomock.Any(), EqCreateRecipeParams(arg)).
+					Times(1).
+					Return(db.Recipe{}, sql.ErrConnDone)
+				store.EXPECT().
+					AssignRecipeToCategory(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(assigment, nil)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
+			name: "BadRequest",
+			body: gin.H{
+				"name":        recipe.Name,
+				"description": recipe.Description,
+				"image":       recipe.Image,
+				"time":        recipe.Time,
+				"url":         recipe.Url,
+				"servings":    recipe.Servings,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+				arg := db.CreateRecipeParams{
+					ID:          category.ID,
+					Name:        recipe.Name,
+					Image:       recipe.Image,
+					Description: recipe.Description,
+					Url:         recipe.Url,
+					Time:        recipe.Time,
+					Servings:    recipe.Servings,
+				}
+				store.EXPECT().
+					CreateRecipe(gomock.Any(), EqCreateRecipeParams(arg)).
+					Times(1).
+					Return(db.Recipe{}, sql.ErrConnDone)
+				store.EXPECT().
+					AssignRecipeToCategory(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(assigment, nil)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
 	}
 
 	for i := range testCases {
