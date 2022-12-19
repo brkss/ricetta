@@ -21,9 +21,17 @@ func NewServer(store db.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
+	// ----- USER
 	router.POST("/register", server.createUser)
+
+	// ----- RECIPE CATEGORY
 	router.POST("/create-category", server.CreateRecipeCategoryAPI)
 	router.GET("/categories", server.GetCategoriesAPI)
+
+	// ----- RECIPE
+	router.POST("/create-recipe", server.CreateRecipeAPI)
+
+	// ----- TESTING
 	router.GET("/ping", server.Ping)
 	server.router = router
 	return server
