@@ -14,7 +14,9 @@ LIMIT $1
 OFFSET $2;
 
 -- name: GetRecipeByCategory :many
+
 SELECT * from "Recipe" as r 
 LEFT JOIN "RecipeCategory_Recipe" as rcr  
 ON rcr.recipe_id = r.id 
-WHERE rcr.recipe_category_id = $1;
+WHERE rcr.recipe_category_id = $1
+AND rcr.recipe_id is NULL;

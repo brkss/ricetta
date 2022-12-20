@@ -56,10 +56,12 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Rec
 }
 
 const getRecipeByCategory = `-- name: GetRecipeByCategory :many
+
 SELECT r.id, name, description, image, active, time, url, servings, created_at, rcr.id, recipe_id, recipe_category_id from "Recipe" as r 
 LEFT JOIN "RecipeCategory_Recipe" as rcr  
 ON rcr.recipe_id = r.id 
 WHERE rcr.recipe_category_id = $1
+AND rcr.recipe_id is NULL
 `
 
 type GetRecipeByCategoryRow struct {

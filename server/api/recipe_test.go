@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -326,5 +327,89 @@ func TestGetRecipes(t *testing.T) {
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(recorder)
 		})
+	}
+}
+
+func RandomRecipeByCategoryRow() (db.GetRecipeByCategoryRow, db.Recipe, db.RecipeCategory) {
+	recipe := RandomRecipe()
+	category := RandomCategory()
+
+	return db.GetRecipeByCategoryRow{
+		ID:               recipe.ID,
+		Name:             recipe.Name,
+		Description:      recipe.Description,
+		Image:            recipe.Image,
+		Active:           recipe.Active,
+		Time:             recipe.Time,
+		Url:              recipe.Url,
+		Servings:         recipe.Servings,
+		CreatedAt:        recipe.CreatedAt,
+		ID_2:             sql.NullString{String: uuid.New().String(), Valid: true},
+		RecipeID:         sql.NullString{String: recipe.ID, Valid: true},
+		RecipeCategoryID: sql.NullString{String: category.ID, Valid: true},
+	}, recipe, category
+}
+
+func TestGetRecipesByCategory(t *testing.T) {
+
+	row, recipe, category := RandomRecipeByCategoryRow()
+	testCases := []struct {
+		name          string
+		catid         string
+		buildStabs    func(store *mockdb.MockStore)
+		checkResponse func(recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name:  "OK",
+			catid: category.ID,
+			buildStabs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					GetRecipeByCategory(gomock.Any(), category.ID).
+					Times(1).
+					Return([]db.GetRecipeByCategoryRow{row}, nil)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				checkBodyMatch(t, recorder.Body, recipe)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStabs(store)
+
+			server := newTestServer(store)
+			recorder := httptest.NewRecorder()
+
+			url := fmt.Sprintf("/recipes/%s", tc.catid)
+			request, err := http.NewRequest(http.MethodGet, url, nil)
+			require.NoError(t, err)
+
+			server.router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+	}
+}
+
+func checkBodyMatch(t *testing.T, body *bytes.Buffer, recipe db.Recipe) {
+	data, err := ioutil.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotRecipes []db.GetRecipeByCategoryRow
+	err = json.Unmarshal(data, &gotRecipes)
+	require.NoError(t, err)
+
+	for _, recipe := range gotRecipes {
+		require.Equal(t, recipe.ID, recipe.ID)
+		require.Equal(t, recipe.Name, recipe.Name)
+		require.Equal(t, recipe.Description, recipe.Description)
+		require.Equal(t, recipe.Servings, recipe.Servings)
+		require.Equal(t, recipe.Time, recipe.Time)
 	}
 }
