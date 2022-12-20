@@ -23,6 +23,10 @@ type GetRecipeRequest struct {
 	Offset int32 `json:"offset" binding:"required,min=1"`
 }
 
+type GetRecipesByCategoryRequest struct {
+	CategoryId string `uri:"catid" binding:"required"`
+}
+
 func (server *Server) CreateRecipeAPI(ctx *gin.Context) {
 	var req CreateRecipeRequest
 
@@ -81,4 +85,22 @@ func (server *Server) GetRecipes(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, recipes)
 	return
+}
+
+func (server *Server) GetRecipesByCategory(ctx *gin.Context) {
+	var req GetRecipesByCategoryRequest
+
+	err := ctx.ShouldBindUri(&req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	recipes, err := server.store.GetRecipeByCategory(ctx, req.CategoryId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, recipes)
 }

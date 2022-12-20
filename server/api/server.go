@@ -31,6 +31,7 @@ func NewServer(store db.Store) *Server {
 	// ----- RECIPE
 	router.POST("/create-recipe", server.CreateRecipeAPI)
 	router.GET("/recipes", server.GetRecipes)
+	router.GET("/recipes/:catid", server.GetRecipesByCategory)
 
 	// ----- TESTING
 	router.GET("/ping", server.Ping)
