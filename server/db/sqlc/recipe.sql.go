@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+	"database/sql"
+	"time"
 )
 
 const createRecipe = `-- name: CreateRecipe :one
@@ -51,6 +53,64 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Rec
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getRecipeByCategory = `-- name: GetRecipeByCategory :many
+SELECT r.id, name, description, image, active, time, url, servings, created_at, rcr.id, recipe_id, recipe_category_id from "Recipe" as r 
+LEFT JOIN "RecipeCategory_Recipe" as rcr  
+ON rcr.recipe_id = r.id 
+WHERE rcr.recipe_category_id = $1
+`
+
+type GetRecipeByCategoryRow struct {
+	ID               string         `json:"id"`
+	Name             string         `json:"name"`
+	Description      string         `json:"description"`
+	Image            string         `json:"image"`
+	Active           sql.NullBool   `json:"active"`
+	Time             string         `json:"time"`
+	Url              string         `json:"url"`
+	Servings         int32          `json:"servings"`
+	CreatedAt        time.Time      `json:"created_at"`
+	ID_2             sql.NullString `json:"id_2"`
+	RecipeID         sql.NullString `json:"recipe_id"`
+	RecipeCategoryID sql.NullString `json:"recipe_category_id"`
+}
+
+func (q *Queries) GetRecipeByCategory(ctx context.Context, recipeCategoryID string) ([]GetRecipeByCategoryRow, error) {
+	rows, err := q.db.QueryContext(ctx, getRecipeByCategory, recipeCategoryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecipeByCategoryRow{}
+	for rows.Next() {
+		var i GetRecipeByCategoryRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Image,
+			&i.Active,
+			&i.Time,
+			&i.Url,
+			&i.Servings,
+			&i.CreatedAt,
+			&i.ID_2,
+			&i.RecipeID,
+			&i.RecipeCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getRecipes = `-- name: GetRecipes :many

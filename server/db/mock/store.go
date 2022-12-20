@@ -125,6 +125,21 @@ func (mr *MockStoreMockRecorder) GetCategories(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategories", reflect.TypeOf((*MockStore)(nil).GetCategories), arg0, arg1)
 }
 
+// GetRecipeByCategory mocks base method.
+func (m *MockStore) GetRecipeByCategory(arg0 context.Context, arg1 string) ([]db.GetRecipeByCategoryRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRecipeByCategory", arg0, arg1)
+	ret0, _ := ret[0].([]db.GetRecipeByCategoryRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecipeByCategory indicates an expected call of GetRecipeByCategory.
+func (mr *MockStoreMockRecorder) GetRecipeByCategory(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecipeByCategory", reflect.TypeOf((*MockStore)(nil).GetRecipeByCategory), arg0, arg1)
+}
+
 // GetRecipes mocks base method.
 func (m *MockStore) GetRecipes(arg0 context.Context, arg1 db.GetRecipesParams) ([]db.Recipe, error) {
 	m.ctrl.T.Helper()
