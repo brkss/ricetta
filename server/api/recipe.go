@@ -18,6 +18,11 @@ type CreateRecipeRequest struct {
 	CategoryId  string `json:"category_id" binding:"required"`
 }
 
+type GetRecipeRequest struct {
+	Limit  int32 `json:"limit" binding:"required,min=1"`
+	Offset int32 `json:"offset" binding:"required,min=1"`
+}
+
 func (server *Server) CreateRecipeAPI(ctx *gin.Context) {
 	var req CreateRecipeRequest
 
@@ -54,4 +59,26 @@ func (server *Server) CreateRecipeAPI(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, recipe)
+}
+
+func (server *Server) GetRecipes(ctx *gin.Context) {
+	var req GetRecipeRequest
+
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.GetRecipesParams{
+		Limit:  req.Limit,
+		Offset: req.Offset,
+	}
+	recipes, err := server.store.GetRecipes(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, recipes)
+	return
 }

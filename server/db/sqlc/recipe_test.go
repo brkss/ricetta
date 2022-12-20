@@ -82,7 +82,7 @@ func TestRecipeToCategory(t *testing.T) {
 	require.Equal(t, recipeToCategory.RecipeCategoryID, arg.RecipeCategoryID)
 }
 
-func TestGetRecipe(t *testing.T) {
+func TestGetRecipes(t *testing.T) {
 	n := 10
 
 	for i := 0; i < n; i++ {

@@ -234,3 +234,97 @@ func TestCreateRecipe(t *testing.T) {
 		})
 	}
 }
+
+func TestGetRecipes(t *testing.T) {
+	recipes := make([]db.Recipe, 5)
+	for i := 0; i < 5; i++ {
+		recipes[i] = RandomRecipe()
+	}
+	testCases := []struct {
+		name          string
+		body          gin.H
+		buildStabs    func(store *mockdb.MockStore)
+		checkResponse func(recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			body: gin.H{
+				"limit":  5,
+				"offset": 5,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+				arg := db.GetRecipesParams{
+					Limit:  5,
+					Offset: 5,
+				}
+				store.EXPECT().GetRecipes(gomock.Any(), gomock.Eq(arg)).
+					Times(1).
+					Return(recipes, nil)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+		},
+		{
+			name: "InternalError",
+			body: gin.H{
+				"limit":  5,
+				"offset": 5,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+				arg := db.GetRecipesParams{
+					Limit:  5,
+					Offset: 5,
+				}
+				store.EXPECT().GetRecipes(gomock.Any(), gomock.Eq(arg)).
+					Times(1).
+					Return([]db.Recipe{}, sql.ErrConnDone)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
+			name: "BadRequest",
+			body: gin.H{
+				"limit":  -5,
+				"offset": -5,
+			},
+			buildStabs: func(store *mockdb.MockStore) {
+				arg := db.GetRecipesParams{
+					Limit:  5,
+					Offset: 5,
+				}
+				store.EXPECT().GetRecipes(gomock.Any(), gomock.Eq(arg)).
+					Times(0)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStabs(store)
+
+			server := newTestServer(store)
+			recorder := httptest.NewRecorder()
+
+			data, err := json.Marshal(tc.body)
+			require.NoError(t, err)
+
+			url := "/recipes"
+			request, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(data))
+			require.NoError(t, err)
+
+			server.router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+	}
+}
